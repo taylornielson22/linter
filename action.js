@@ -23,15 +23,17 @@ function run(cmd) {
 			cwd: optionsWithDefaults.dir,
 			maxBuffer: 20 * 1024 * 1024,
 		});
+        core.debug(`Stdout: ${output.stdout}`);
         output.stdout = stdout.trim(); 
 	} catch (error) {
             output.status = error.status;
             output.stderr = error.stderr;
-            output.stdout = error.stdout.trim();
+            output.stdout = error.stdout;
 			core.debug(`Exit code: ${error.status}`);
+            core.debug(`Stdout: ${error.stdout}`);
 			core.debug(`Stderr: ${error.stderr}`);
 	}
-    core.debug(`Stdout: ${output.stdout}`);
+    
     return output;
 }
 
