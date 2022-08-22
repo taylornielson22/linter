@@ -1,40 +1,40 @@
 const { execSync } = require("child_process");
 
 const core = require("@actions/core");
-
-const RUN_OPTIONS_DEFAULTS = { dir: null, ignoreErrors: false, prefix: "" };
+/**
+ * Lint result object.
+ * @typedef OutputResult
+ * @property {number} status 
+ * @property {string} stdout
+ * @property {string} stderr
 
 
 /**
  * Executes the provided shell command
  * @param {string} cmd - Shell command to execute
- * @returns {{status: number, stdout: string, stderr: string}} - Output of the shell command
+ * @returns {OutputResult} - Output of the shell command
  */
 function run(cmd) {
-	core.debug(cmd);
-    const output = {
-        status: 0,
-        stdout: "",
-        stderr: "",
-    };
+	core.info(cmd);
 	try {
 		const stdout = execSync(cmd, {
 			encoding: "utf8",
 			cwd: optionsWithDefaults.dir,
 			maxBuffer: 20 * 1024 * 1024,
 		});
-        core.debug(`Stdout: ${output.stdout}`);
-        output.stdout = stdout.trim(); 
+        core.info(`Stdout: ${stdout}`);
+        return {
+            status: 0,
+            stdout: stdout.trim(),
+            stderr: "",
+        };
 	} catch (error) {
-            output.status = error.status;
-            output.stderr = error.stderr;
-            output.stdout = error.stdout;
-			core.debug(`Exit code: ${error.status}`);
-            core.debug(`Stdout: ${error.stdout}`);
-			core.debug(`Stderr: ${error.stderr}`);
+        return {
+            status: error.status,
+            stdout: error.stdout.trim(),
+            stderr: error.stderr.trim(),
+        };
 	}
-    
-    return output;
 }
 
 module.exports = {
