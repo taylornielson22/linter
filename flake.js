@@ -30,7 +30,7 @@ class Flake8 {
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
-        files = this.changedFiles();
+        const files = this.changedFiles();
 		const output = run(` flake8 --filename ${files}`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
