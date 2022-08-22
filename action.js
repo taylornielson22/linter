@@ -1,5 +1,5 @@
 const { execSync } = require("child_process");
-
+const RUN_OPTIONS = { dir: null, ignoreErrors: false, prefix: "" };
 const core = require("@actions/core");
 /**
  * Lint result object.
@@ -14,9 +14,11 @@ const core = require("@actions/core");
  * @param {string} cmd - Shell command to execute
  * @returns {OutputResult} - Output of the shell command
  */
-function run(cmd) {
+function run(cmd,) {
 	core.info(cmd);
-    
+    const optionsWithDefaults = {
+		...RUN_OPTIONS,
+	};
 	try {
 		const stdout = execSync(cmd, {
 			encoding: "utf8",
