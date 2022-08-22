@@ -19,11 +19,7 @@ class Flake8 {
 
 	/**
 	 * Runs the linting program and returns the command output
-	 * @param {string} dir - Directory to run the linter in
-	 * @param {string[]} extensions - File extensions which should be linted
-	 * @param {string} args - Additional arguments to pass to the linter
-	 * @param {boolean} fix - Whether the linter should attempt to fix code style issues automatically
-	 * @param {string} prefix - Prefix to the lint command
+	 * @param {number} COMMIT_COUNT= - commit count
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {

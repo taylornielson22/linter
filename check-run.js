@@ -49,6 +49,7 @@ async function createCheck(linterName, sha, lintResult, summary) {
     }
 }
 
+
 function http_request(url, body){
 	const token = core.getInput("token");
 	return new Promise((resolve) => {
