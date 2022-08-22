@@ -23,9 +23,6 @@ class Flake8 {
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
-		if (fix) {
-			core.warning(`${this.name} does not support auto-fixing`);
-		}
 		const output = run(`git diff --name-only --diff-filter=ACMRTUX HEAD~${COMMIT_COUNT} | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty black --target-version py38 --check`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
