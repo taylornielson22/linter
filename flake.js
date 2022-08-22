@@ -16,18 +16,24 @@ class Flake8 {
 	static get name() {
 		return "Flake8";
 	}
-
+    /**
+	 * @returns {string} - list of changed files
+	 */
+    static changedFiles(){
+        const output = run(`git diff --name-only --diff-filter=ACMRTUX ${{ BASE_SHA }} | grep -E .pyi*$ | xargs --max-lines=50000`)
+        const filesChanged = output.stdout.split(" ")
+        const files = filesChanged.map((ext) => `"**${sep}*.${ext}"`).join(",");
+    }
 	/**
 	 * Runs the linting program and returns the command output
 	 * @param {number} COMMIT_COUNT= - commit count
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
-		const output = run(`git diff --name-only --diff-filter=ACMRTUX HEAD~${COMMIT_COUNT} | grep -E .pyi*$  |
-        xargs --max-lines=50000 --no-run-if-empty flake8`);
+        files = changedFiles();
+		const output = run(` flake8 --filename ${files}`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
-
 		const matches = output.stdout.matchAll(PARSE_REGEX);
 		for (const match of matches) {
 			const [_, pathFull, line, rule, text] = match;
