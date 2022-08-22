@@ -16,23 +16,24 @@ const core = require("@actions/core");
  */
 function run(cmd) {
 	core.info(cmd);
+    
 	try {
 		const stdout = execSync(cmd, {
 			encoding: "utf8",
 			cwd: optionsWithDefaults.dir,
 			maxBuffer: 20 * 1024 * 1024,
-		});
+		}).trim();
         core.info(`Stdout: ${stdout}`);
         return {
             status: 0,
-            stdout: stdout.trim(),
+            stdout: stdout,
             stderr: "",
         };
 	} catch (error) {
         return {
             status: error.status,
-            stdout: error.stdout.trim(),
-            stderr: error.stderr.trim(),
+            stdout: error.stdout,
+            stderr: error.stderr,
         };
 	}
 }
