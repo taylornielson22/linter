@@ -22,18 +22,19 @@ function run(cmd) {
 			encoding: "utf8",
 			cwd: optionsWithDefaults.dir,
 			maxBuffer: 20 * 1024 * 1024,
-		}).trim();
+		});
         core.info(`Stdout: ${stdout}`);
         return {
             status: 0,
-            stdout: stdout,
+            stdout: `${stdout}`.trim(),
             stderr: "",
         };
 	} catch (error) {
+        core.info(error);
         return {
             status: error.status,
-            stdout: error.stdout,
-            stderr: error.stderr,
+            stdout: `${error.stdout}`.trim(),
+            stderr: `${error.stderr}`.trim(),
         };
 	}
 }
