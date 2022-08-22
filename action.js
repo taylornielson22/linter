@@ -22,7 +22,7 @@ function run(cmd) {
 		return output;
 	} catch (error) {
 			core.debug(`Exit code: ${error.status}`);
-			core.debug(`Stdout: ${errort.stdout}`);
+			core.debug(`Stdout: ${error.stdout}`);
 			core.debug(`Stderr: ${error.stderr}`);
 			return output;
 	}
