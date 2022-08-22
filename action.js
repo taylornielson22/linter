@@ -18,28 +18,13 @@ function run(cmd) {
 			cwd: optionsWithDefaults.dir,
 			maxBuffer: 20 * 1024 * 1024,
 		});
-		const output = {
-			status: 0,
-			stdout: stdout.trim(),
-			stderr: "",
-		};
-		core.debug(`Stdout: ${output.stdout}`);
+		core.debug(`Stdout: ${stdout.trim()}`);
 		return output;
-	} catch (err) {
-		if (optionsWithDefaults.ignoreErrors) {
-			const output = {
-				status: err.status,
-				stdout: err.stdout.trim(),
-				stderr: err.stderr.trim(),
-			};
-
-			core.debug(`Exit code: ${output.status}`);
-			core.debug(`Stdout: ${output.stdout}`);
-			core.debug(`Stderr: ${output.stderr}`);
-
+	} catch (error) {
+			core.debug(`Exit code: ${error.status}`);
+			core.debug(`Stdout: ${errort.stdout}`);
+			core.debug(`Stderr: ${error.stderr}`);
 			return output;
-		}
-		throw err;
 	}
 }
 

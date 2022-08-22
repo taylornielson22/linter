@@ -1,10 +1,9 @@
 /**
  * Lint result object.
  * @typedef LintResult
- * @property {boolean} isSuccess Whether the result is success.
- * @property {object[]} warning Warnings.
- * @property {object[]} error Errors.
- */
+ * @property {boolean} isSuccess 
+ * @property {object[]} warning 
+ * @property {object[]} error 
 
 /**
  * Returns an object for storing linting results
@@ -12,7 +11,7 @@
  */
  function initLintResult() {
 	return {
-		isSuccess: true, // Usually determined by the exit code of the linting command
+		isSuccess: true, 
 		warning: [],
 		error: [],
 	};
