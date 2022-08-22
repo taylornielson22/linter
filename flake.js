@@ -30,18 +30,8 @@ class Flake8 {
 		if (fix) {
 			core.warning(`${this.name} does not support auto-fixing`);
 		}
-		const output = run("git diff --name-only --diff-filter=ACMRTUX HEAD~${COMMIT_COUNT} | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty black --target-version py38 --check");
-        return this.parseOutput(output);
-    }
-
-	/**
-	 * Parses the output of the lint command. Determines the success of the lint process and the
-	 * severity of the identified code style violations
-	 * @param {{status: number, stdout: string, stderr: string}} output - Output of the lint command
-	 * @returns {LintResult} - Parsed lint result
-	 */
-	static parseOutput(output) {
-		const lintResult = initLintResult();
+		const output = run(`git diff --name-only --diff-filter=ACMRTUX HEAD~${COMMIT_COUNT} | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty black --target-version py38 --check`);
+        const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
 
 		const matches = output.stdout.matchAll(PARSE_REGEX);
@@ -62,7 +52,7 @@ class Flake8 {
 		}
 
 		return lintResult;
-	}
+    }
 }
 
 module.exports = Flake8;
