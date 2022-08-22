@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const github = require('@actions/github');
 const Flake8 = require('./flake');
 const { run } = require('./action');
+const { createCheck } = require("./check-run");
 const checks = [];
 try{
     const black = core.getBooleanInput('black')

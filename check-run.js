@@ -41,40 +41,44 @@ async function createCheck(linterName, sha, lintResult, summary) {
 		},
 	};
 	try {
-		const token = core.getInput("token");
 		const repo = core.getInput("repo_name");
-		await new Promise((resolve) => {
-			const req = https
-				.request(`${process.env.GITHUB_API_URL}/repos/${repo}/check-runs`, {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-						Accept: "application/vnd.github.antiope-preview+json",
-						Authorization: `Bearer ${token}`,
-						"User-Agent": actionName,
-					},
-					body,
-				}, (res) => {
-					let data = "";
-					res.on("data", (chunk) => {
-						data += chunk;
-					});
-					res.on("end", () => {
-						if (res.statusCode >= 400) 
-							core.info(`Error trying to create GitHub check run ${res.statusCode}`);
-						else 
-							resolve({ res, data: JSON.parse(data) });
-					});
-				})
-			if (body) {
-				req.end(JSON.stringify(body));
-			} else {
-				req.end();
-			}
-		});
+		await http_request(`${process.env.GITHUB_API_URL}/repos/${repo}/check-runs`, body);
 		core.info(`${linterName} check created successfully`);
 	} catch (err) {
 		throw new Error(`Error trying to create GitHub check run: ${errorMessage}`);
     }
+}
+
+function http_request(url, body){
+	const token = core.getInput("token");
+	return new Promise((resolve) => {
+		const req = https
+			.request(url, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Accept: "application/vnd.github.antiope-preview+json",
+					Authorization: `Bearer ${token}`,
+					"User-Agent": actionName,
+				},
+				body,
+			}, (res) => {
+				let data = "";
+				res.on("data", (chunk) => {
+					data += chunk;
+				});
+				res.on("end", () => {
+					if (res.statusCode >= 400) 
+						core.info(`Error trying to create GitHub check run ${res.statusCode}`);
+					else 
+						resolve({ res, data: JSON.parse(data) });
+				});
+			})
+		if (body) {
+			req.end(JSON.stringify(body));
+		} else {
+			req.end();
+		}
+	});
 }
 module.exports = { createCheck };
