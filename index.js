@@ -4,18 +4,16 @@ const Flake8 = require('./flake');
 const { run } = require('./action');
 const { createCheck } = require("./check-run");
 const checks = [];
-try{
-    const black = core.getBooleanInput('black')
-    const flake = core.getBooleanInput('flake8')
+
+async function executeAction(lintCheckName) {
+    core.info(`Linting with ${lintCheckName }`);
    // if(flake){
-		core.info("Linting with Flake8");
         var linter = Flake8
         const lintResult = linter.lint(2);
         const numErrors = lintResult.error.length;
 	    const numWarnings = lintResult.warning.length;
         const summary = `${numErrors} error${numErrors > 1 ? "s" : ""} and ${numWarnings} warning${ numWarnings> 1 ? "s" : ""}`;
-        core.info(`Flake8 found ${summary}  (${lintResult.isSuccess ? "success" : "failure"})`);
-        lintCheckName = 'Flake8'
+        core.info(`${lintCheckName }  found ${summary}  (${lintResult.isSuccess ? "success" : "failure"})`);
         checks.push({ lintCheckName, lintResult, summary });
         const sha = run("git rev-parse HEAD").stdout;
 		await Promise.all(
@@ -23,6 +21,8 @@ try{
 				createCheck(lintCheckName, sha, lintResult, summary),
 			),
 		);
-} catch(error) {
-    core.setFailed(error.message);
 }
+
+executeAction('Flake8').catch((error) => {
+	core.setFailed(error.message);
+});
