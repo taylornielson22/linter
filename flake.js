@@ -20,7 +20,7 @@ class Flake8 {
 	 * @returns {string} - list of changed files
 	 */
     static changedFiles(){
-        const output = run(`git diff --name-only --diff-filter=ACMRTUX ${{ BASE_SHA }} | grep -E .pyi*$ | xargs --max-lines=50000`)
+        const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
         const filesChanged = output.stdout.split(" ")
         const files = filesChanged.map((ext) => `"**${sep}*.${ext}"`).join(",");
     }

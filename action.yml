@@ -7,6 +7,9 @@ inputs:
   repo_name:
     description: Repository Name
     required: true
+  sha:
+    description: Base sha of PR
+    required: true
   black:
     description: Enable Black checks
     required: false
