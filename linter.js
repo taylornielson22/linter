@@ -2,7 +2,6 @@ const { sep } = require("path");
 const core = require("@actions/core");
 const { run } = require("./action");
 const { initLintResult } = require("./lint-result");
-const parseDiff = require("parse-diff");
 
 const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("base_sha") } | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty`;
 const PARSE_REGEX = /^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm;
@@ -35,9 +34,9 @@ class Linter
     }
 
     /**
-	* Runs the linting program and returns the command output
-	* @returns {LintResult} - Parsed lint result
-	*/
+	 * Runs the linting program and returns the command output
+	 * @returns {LintResult} - Parsed lint result
+	 */
     lint()
     {
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
@@ -45,32 +44,10 @@ class Linter
     }
 
     /**
-	* Parse output from linting
-    * @param {OutputResult} lintOutput
+	 * Parse output from linting
+     * @param {OutputResult} lintOutput
     * @returns {LintResult} - parsed output of linting result
     */
-     parseLint(lintOutput)
-     {
-        throw new Error("Abstract method has no implementation")
-     }
-}
-	
-class Flake8 extends Linter
-{
-    constructor () {
-        super();
-     }
-
-    name() 
-    {
-		return "flake8"
-	}
-
-    cmd() 
-    {
-        return "flake8"
-    }
-
     parseLint(lintOutput)
     {
         const lintResult = initLintResult();
@@ -92,7 +69,24 @@ class Flake8 extends Linter
 				message: `${text} (${rule})`,
 			});
         }
-        return lintResult;
+            return lintResult;
+    }
+}
+	
+class Flake8 extends Linter
+{
+    constructor () {
+        super();
+     }
+
+    name() 
+    {
+		return "flake8"
+	}
+
+    cmd() 
+    {
+        return "flake8"
     }
 }
 class Black extends Linter
@@ -109,27 +103,6 @@ class Black extends Linter
     cmd() 
     {
         return "black --target-version py38 --check"
-    }
-    
-    parseLint(lintOutput) 
-    {
-        const lintResult = initLintResult();
-        lintResult.isSuccess = lintOutput.status === 0;
-        const files = parseDiff(lintOutput.stdout);
-        for (const file of files) {
-            const { chunks, to: path } = file;
-            for (const chunk of chunks) {
-                const { oldStart, oldLines, changes } = chunk;
-                const chunkDiff = changes.map((change) => change.content).join("\n");
-                lintResult.error.push({
-                    path,
-                    firstLine: oldStart,
-                    lastLine: oldStart + oldLines,
-                    message: chunkDiff,
-                });
-            }
-        }
-        return lintResult ;
     }
 }   
     
