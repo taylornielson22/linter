@@ -1,16 +1,15 @@
 const {Linter, Flake8, Black} = require('./linter');
 const core = require('@actions/core')
-const { updateCheck, createInProgressCheck} = require("./check-run");
+const { createCheck } = require("./check-run");
 
 
 /**
- * Executes action w/ specfic action
+ * Executes action w/ specfic linter
  *  @param {Linter} linter
  */
 async function executeAction(linter) {
     const checks = [];
     const linterName = linter.name()
-    await createInProgressCheck(linterName);
     core.info(`Linting with ${linterName }`);
     try
     {
@@ -20,7 +19,7 @@ async function executeAction(linter) {
         checks.push({ linterName, lintResult, summary });
 	    await Promise.all(
 	        checks.map(({ linterName, lintResult, summary }) =>
-			    updateCheck(linterName, lintResult, summary),
+			    createCheck(linterName, lintResult, summary),
 	    	),
 	    );
     }

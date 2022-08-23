@@ -13,8 +13,8 @@ const sha = core.getInput("head_sha");
  * @param {LintResult} lintResult - Parsed lint result
  * @param {string} summary - GitHub check summary
  */
-async function updateCheck(linterName, lintResult, summary) {
-	core.info(`Updating check run to complete for ${linterName}`);
+async function createCheck(linterName, lintResult, summary) {
+	core.info(`Creating check run w/ annotations from ${linterName} linter`);
 	let annotations = [];
 	for (const level of ["error", "warning"]) {
 		annotations = [
@@ -28,12 +28,11 @@ async function updateCheck(linterName, lintResult, summary) {
 			})),
 		];
 	}
-	const check_run_id = await getJobId(linterName)
 	const body = {
 		owner: owner_input,
 		repo: repo_input,
 		name: linterName,
-		check_run_id: `${check_run_id}`,
+		head_sha: sha,
 		conclusion: lintResult.isSuccess ? "success" : "failure",
 		output: {
 		  title: `${linterName} Completed Linting`,
@@ -48,36 +47,6 @@ async function updateCheck(linterName, lintResult, summary) {
 	});
 }
 
-async function createInProgressCheck(linterName) {
-	core.info(`Creating In Progress Check Run for ${linterName}`);
-	const body = {
-		owner: owner_input,
-		repo: repo_input,
-		name: linterName,
-		head_sha: sha,
-		status: 'in_progress',
-		output: {
-		  	title: `${linterName} linting In Progress`,
-		  	summary: '',
-    		text: '',
-		}
-	};
-	await request(body).catch((error) => {
-        core.info(`Error trying to "In Progress" check run for ${linterName}`);
-		core.info(error);
-	});
-	
-}
-
-async function getJobId(linterName) {
-	const octokit = github.getOctokit(core.getInput("github_token"));
-	const { data } = await octokit.rest.actions.listJobsForWorkflowRun({
-	  ...github.context.repo,
-	  run_id: github.context.runId,
-	});
-	return data.jobs.find(({ name }) => name === linterName)?.id ?? undefined;
-}
-
 async function request(body){
 	try{
 		const octokit = new Octokit({
@@ -89,4 +58,4 @@ async function request(body){
 		throw new Error(`Error trying to create GitHub check run: ${error}`);
     }
 }
-module.exports = { updateCheck, createInProgressCheck};
+module.exports = { createCheck};
