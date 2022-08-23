@@ -28,7 +28,7 @@ function run(cmd) {
         core.info(`Stdout: ${stdout}`);
         return {
             status: 0,
-            stdout: `${stdout}`.trim(),
+            stdout: `${stdout}`,
             stderr: "",
         };
 	} catch (error) {

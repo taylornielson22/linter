@@ -17,23 +17,18 @@ class Flake8 {
 	static get name() {
 		return "Flake8";
 	}
-    /**
-	 * @returns {string} - list of changed files
-	 */
-    static changedFiles(){
-        const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
-        core.info(output.stdout);
-        const filesChanged = output.stdout.split(" ");
-        core.info(filesChanged);
-        return filesChanged.join(",");
-    }
+    
 	/**
 	 * Runs the linting program and returns the command output
 	 * @param {number} COMMIT_COUNT= - commit count
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
-        let files = this.changedFiles();
+        const out = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
+        core.info(out.stdout);
+        const filesChanged = out.stdout.split(" ");
+        core.info(filesChanged);
+        const files = filesChanged.join(",");
         core.info(`files changed: ${files}`);
 		const output = run(`flake8 --filename ${files}`);
         const lintResult = initLintResult();
