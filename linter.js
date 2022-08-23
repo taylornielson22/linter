@@ -39,7 +39,6 @@ class Linter
 	 */
     lint()
     {
-        run(`pip install ${ this.name() }`)
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
         return this.parseLint(output);
     }

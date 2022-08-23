@@ -14,6 +14,7 @@ const sha = core.getInput("head_sha");
  * @param {string} summary - GitHub check summary
  */
 async function updateCheck(linterName, lintResult, summary) {
+	core.info(`Updating check run to complete for ${linterName}`);
 	let annotations = [];
 	for (const level of ["error", "warning"]) {
 		annotations = [
@@ -48,6 +49,7 @@ async function updateCheck(linterName, lintResult, summary) {
 }
 
 async function createInProgressCheck(linterName) {
+	core.info(`Creating In Progress Check Run for ${linterName}`);
 	const body = {
 		owner: owner_input,
 		repo: repo_input,
@@ -64,6 +66,7 @@ async function createInProgressCheck(linterName) {
         core.info(`Error trying to "In Progress" check run for ${linterName}`);
 		core.info(error);
 	});
+	
 }
 
 async function getJobId(linterName) {
@@ -81,7 +84,7 @@ async function request(body){
 			auth: core.getInput("github_token")
 		})
 		await octokit.request(`POST /repos/${owner_input}/${repo_input}/check-runs`, body);
-		core.info(`${linterName} check created successfully`);
+		core.info(`Check run created successfully`);
 	} catch (error) {
 		throw new Error(`Error trying to create GitHub check run: ${error}`);
     }
