@@ -14,7 +14,7 @@ const core = require("@actions/core");
  * @param {string} cmd - Shell command to execute
  * @returns {OutputResult} - Output of the shell command
  */
-function run(cmd,) {
+function run(cmd) {
 	core.info(cmd);
     const optionsWithDefaults = {
 		...RUN_OPTIONS,

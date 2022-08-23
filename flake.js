@@ -4,6 +4,7 @@ const core = require("@actions/core");
 
 const { run } = require("./action");
 const { initLintResult } = require("./lint-result");
+const { Cipher } = require("crypto");
 
 const PARSE_REGEX = /^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm;
 
@@ -30,8 +31,9 @@ class Flake8 {
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
-        const files = this.changedFiles();
-		const output = run(` flake8 --filename ${files}`);
+        let files = this.changedFiles();
+        core.info(`files changed: ${files}`);
+		const output = run(`flake8 --filename ${files}`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
 		const matches = output.stdout.matchAll(PARSE_REGEX);
