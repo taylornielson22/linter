@@ -24,7 +24,7 @@ class Flake8 {
 	 */
 	static lint(COMMIT_COUNT=1) {
         run("pip install black flake8")
-		const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty flake8`);
+		const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("base_sha") } | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty flake8`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
 		const matches = output.stdout.matchAll(PARSE_REGEX);

@@ -14,7 +14,7 @@ const { name: actionName } = require("./package.json");
  * @param {LintResult} lintResult - Parsed lint result
  * @param {string} summary - GitHub check summary
  */
-async function createCheck(linterName, sha, lintResult, summary) {
+async function createCheck(linterName, lintResult, summary) {
 	let annotations = [];
 	for (const level of ["error", "warning"]) {
 		annotations = [
@@ -30,6 +30,9 @@ async function createCheck(linterName, sha, lintResult, summary) {
 	}
 	const owner_input = core.getInput("owner");
 	const repo_input = core.getInput("repo_name");
+	const sha = core.getInput("head_sha");
+	core.info(`POST /repos/${owner_input}/${repo_input}/check-runs`);
+	core.info(`${annotations}`);
 	try{
 		const octokit = new Octokit({
 			auth: core.getInput("github_token")

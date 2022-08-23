@@ -10,8 +10,11 @@ inputs:
   owner:
     description: Owner Name
     required: true
-  sha:
+  base_sha:
     description: Base sha of PR
+    required: true
+  head_sha:
+    description: Head sha of Commit
     required: true
   black:
     description: Enable Black checks

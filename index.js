@@ -15,10 +15,9 @@ async function executeAction(lintCheckName) {
         const summary = `${numErrors} error${numErrors > 1 ? "s" : ""} and ${numWarnings} warning${ numWarnings> 1 ? "s" : ""}`;
         core.info(`${lintCheckName }  found ${summary}  (${lintResult.isSuccess ? "success" : "failure"})`);
         checks.push({ lintCheckName, lintResult, summary });
-        const sha = run("git rev-parse HEAD").stdout;
 		await Promise.all(
 			checks.map(({ lintCheckName, lintResult, summary }) =>
-				createCheck(lintCheckName, sha, lintResult, summary),
+				createCheck(lintCheckName, lintResult, summary),
 			),
 		);
 }
