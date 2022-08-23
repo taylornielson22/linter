@@ -34,10 +34,14 @@ async function executeAction(linter) {
 if(core.getBooleanInput("flake8") == true)
 {
     var linter = new Flake8();
-    await executeAction(linter);
+    executeAction(linter).then(() =>{
+        core.info(`Linting complete with ${linter.name()}`);
+    });
 }
 if(core.getBooleanInput("black") == true)
 {
     var linter = new Black();
-    await executeAction(linter);
+    executeAction(linter).then(() =>{
+        core.info(`Linting complete with ${linter.name()}`);
+    });
 }
