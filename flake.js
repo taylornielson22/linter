@@ -17,7 +17,7 @@ class Flake8 {
 	static get name() {
 		return "Flake8";
 	}
-    
+
 	/**
 	 * Runs the linting program and returns the command output
 	 * @param {number} COMMIT_COUNT= - commit count
@@ -25,9 +25,9 @@ class Flake8 {
 	 */
 	static lint(COMMIT_COUNT=1) {
         const out = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
-        core.info(out.stdout);
+        core.info(`out stdout is ${out.stdout}`);
         const filesChanged = out.stdout.split(" ");
-        core.info(filesChanged);
+        core.info(`out stdout is ${filesChanged.toString()}`);
         const files = filesChanged.join(",");
         core.info(`files changed: ${files}`);
 		const output = run(`flake8 --filename ${files}`);
