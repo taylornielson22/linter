@@ -1,4 +1,4 @@
-import * as github from '@actions/github';
+const github = require('@actions/github');
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/core");
 const owner_input = core.getInput("owner");
