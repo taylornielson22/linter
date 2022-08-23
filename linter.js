@@ -20,7 +20,7 @@ class Linter
     /**
     * @returns {string} - linter name
     */
-    static name() 
+    name() 
     {
 		throw new Error("Abstract method has no implementation")
 	}
@@ -28,7 +28,7 @@ class Linter
     /**
     * @returns {string} - linting cmd
     */
-    static cmd() 
+    cmd() 
     {
         throw new Error("Abstract method has no implementation")
     }
@@ -37,7 +37,7 @@ class Linter
 	 * Runs the linting program and returns the command output
 	 * @returns {LintResult} - Parsed lint result
 	 */
-    static lint()
+    lint()
     {
         run(`pip install ${ this.name() }`)
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
@@ -49,7 +49,7 @@ class Linter
      * @param {OutputResult} lintOutput
     * @returns {LintResult} - parsed output of linting result
     */
-    static parseLint(lintOutput)
+    parseLint(lintOutput)
     {
         const lintResult = initLintResult();
 		lintResult.isSuccess = lintOutput.status === 0;
@@ -76,24 +76,32 @@ class Linter
 	
 class Flake8 extends Linter
 {
-    static name() 
+    constructor () {
+        super();
+     }
+
+    name() 
     {
 		return "flake8"
 	}
 
-    static cmd() 
+    cmd() 
     {
         return "flake8"
     }
 }
 class Black extends Linter
 {
-    static name() 
+    constructor () {
+        super();
+     } 
+
+    name() 
     {
 		return "black"
 	}
 
-    static cmd() 
+    cmd() 
     {
         return "black --target-version py38 --check"
     }
