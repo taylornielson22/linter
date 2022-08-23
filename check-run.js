@@ -1,20 +1,19 @@
-
+import * as github from '@actions/github';
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/core");
-const https = require("https");
-const { name: actionName } = require("./package.json");
+const owner_input = core.getInput("owner");
+const repo_input = core.getInput("repo_name");
+const sha = core.getInput("head_sha");
 
-/** @typedef {import('./context').GithubContext} GithubContext */
 /** @typedef {import('./lint-result').LintResult} LintResult */
 
 /**
  * Creates a new check on run 
  * @param {string} linterName - linter ran
- * @param {string} sha - SHA of the commit which should be annotated
  * @param {LintResult} lintResult - Parsed lint result
  * @param {string} summary - GitHub check summary
  */
-async function createCheck(linterName, lintResult, summary) {
+async function updateCheck(linterName, lintResult, summary) {
 	let annotations = [];
 	for (const level of ["error", "warning"]) {
 		annotations = [
@@ -28,31 +27,63 @@ async function createCheck(linterName, lintResult, summary) {
 			})),
 		];
 	}
-	const owner_input = core.getInput("owner");
-	const repo_input = core.getInput("repo_name");
-	const sha = core.getInput("head_sha");
-	core.info(`POST /repos/${owner_input}/${repo_input}/check-runs`);
-	core.info(`${annotations}`);
+	const check_run_id = await getJobId(linterName)
+	const body = {
+		owner: owner_input,
+		repo: repo_input,
+		name: linterName,
+		check_run_id: `${check_run_id}`,
+		conclusion: lintResult.isSuccess ? "success" : "failure",
+		output: {
+		  title: `${linterName} Completed Linting`,
+		  summary: `${summary}`,
+		  annotations,
+		}
+	};
+	
+	await request(body).catch((error) => {
+        cosnsole.log(`Error trying to check run for ${linterName} linting results`);
+		cosnsole.log(error);
+	});
+}
+
+async function createInProgressCheck(linterName,) {
+	const body = {
+		owner: owner_input,
+		repo: repo_input,
+		name: linterName,
+		head_sha: sha,
+		status: 'in_progress',
+		output: {
+		  	title: `${linterName} linting In Progress`,
+		  	summary: '',
+    		text: '',
+		}
+	};
+	await request(body).catch((error) => {
+        cosnsole.log(`Error trying to "In Progress" check run for ${linterName}`);
+		cosnsole.log(error);
+	});
+}
+
+async function getJobId(linterName) {
+	const octokit = github.getOctokit(core.getInput("github_token"));
+	const { data } = await octokit.rest.actions.listJobsForWorkflowRun({
+	  ...github.context.repo,
+	  run_id: github.context.runId,
+	});
+	return data.jobs.find(({ name }) => name === linterName)?.id ?? undefined;
+}
+
+async function request(body){
 	try{
 		const octokit = new Octokit({
 			auth: core.getInput("github_token")
 		})
-		await octokit.request(`POST /repos/${owner_input}/${repo_input}/check-runs`, {
-			owner: owner_input,
-			repo: repo_input,
-			name: linterName,
-			head_sha: sha,
-			conclusion: lintResult.isSuccess ? "success" : "failure",
-			output: {
-			  title: `${linterName} Completed Linting`,
-			  summary: `${linterName} found ${summary}`,
-			  annotations,
-			}
-		  });
-		  core.info(`${linterName} check created successfully`);
+		await octokit.request(`POST /repos/${owner_input}/${repo_input}/check-runs`, body);
+		core.info(`${linterName} check created successfully`);
 	} catch (error) {
 		throw new Error(`Error trying to create GitHub check run: ${error}`);
     }
 }
-
-module.exports = { createCheck };
+module.exports = { updateCheck, createInProgressCheck};

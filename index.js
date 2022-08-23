@@ -1,27 +1,44 @@
+import {Linter, Flake8, Black} from './linter';
 const core = require('@actions/core')
-const github = require('@actions/github');
-const Flake8 = require('./flake');
-const { run } = require('./action');
-const { createCheck } = require("./check-run");
-const checks = [];
+const { updateCheck, createInProgressCheck} = require("./check-run");
 
-async function executeAction(lintCheckName) {
-    core.info(`Linting with ${lintCheckName }`);
-   // if(flake){
-        var linter = Flake8
-        const lintResult = linter.lint(2);
-        const numErrors = lintResult.error.length;
-	    const numWarnings = lintResult.warning.length;
-        const summary = `${numErrors} error${numErrors > 1 ? "s" : ""} and ${numWarnings} warning${ numWarnings> 1 ? "s" : ""}`;
-        core.info(`${lintCheckName }  found ${summary}  (${lintResult.isSuccess ? "success" : "failure"})`);
-        checks.push({ lintCheckName, lintResult, summary });
-		await Promise.all(
-			checks.map(({ lintCheckName, lintResult, summary }) =>
-				createCheck(lintCheckName, lintResult, summary),
-			),
-		);
+
+/**
+ * Executes action w/ specfic action
+ *  @param {Linter} linter
+ */
+async function executeAction(linter) {
+    const checks = [];
+    const linterName = linter.name()
+    await Promise(createInProgressCheck(linterName));
+    core.info(`Linting with ${linterName }`);
+    try
+    {
+        const lintResult = linter.lint();
+        const summary = `${linterName} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
+        core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
+        checks.push({ linterName, lintResult, summary });
+	    await Promise.all(
+	        checks.map(({ linterName, lintResult, summary }) =>
+			    updateCheck(linterName, lintResult, summary),
+	    	),
+	    );
+    }
+    catch(error)
+    {
+        core.info(`Linting FAILED with ${linterName}`);
+        core.setFailed(error.message);
+    }
+    
 }
 
-executeAction('Flake8').catch((error) => {
-	core.setFailed(error.message);
-});
+if(core.getBooleanInput("flake8") == true)
+{
+    var linter = new Flake8();
+    executeAction(linter);
+}
+if(core.getBooleanInput("black") == true)
+{
+    var linter = new Black();
+    executeAction(linter);
+}

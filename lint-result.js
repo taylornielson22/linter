@@ -16,6 +16,8 @@
 		error: [],
 	};
 }
+
+
 module.exports = {
 	initLintResult,
 };
