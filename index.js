@@ -10,7 +10,7 @@ const { updateCheck, createInProgressCheck} = require("./check-run");
 async function executeAction(linter) {
     const checks = [];
     const linterName = linter.name()
-    await Promise(createInProgressCheck(linterName));
+    await createInProgressCheck(linterName);
     core.info(`Linting with ${linterName }`);
     try
     {
