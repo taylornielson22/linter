@@ -1,4 +1,4 @@
-import {Linter, Flake8, Black} from './linter';
+const {Linter, Flake8, Black} = require('./linter');
 const core = require('@actions/core')
 const { updateCheck, createInProgressCheck} = require("./check-run");
 
