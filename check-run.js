@@ -42,8 +42,8 @@ async function updateCheck(linterName, lintResult, summary) {
 	};
 	
 	await request(body).catch((error) => {
-        cosnsole.log(`Error trying to check run for ${linterName} linting results`);
-		cosnsole.log(error);
+		core.info(`Error trying to check run for ${linterName} linting results`);
+		core.info(error);
 	});
 }
 
@@ -61,8 +61,8 @@ async function createInProgressCheck(linterName,) {
 		}
 	};
 	await request(body).catch((error) => {
-        cosnsole.log(`Error trying to "In Progress" check run for ${linterName}`);
-		cosnsole.log(error);
+        core.info(`Error trying to "In Progress" check run for ${linterName}`);
+		core.info(error);
 	});
 }
 
