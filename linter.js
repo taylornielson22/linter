@@ -40,6 +40,7 @@ class Linter
     lint()
     {
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
+        core.info(`STATUS: ${ output.status } \nSTDOUT: ${ output.stdout } \nSTDERR: ${ output.stderr }`);
         return this.parseLint(output);
     }
 

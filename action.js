@@ -19,18 +19,16 @@ function run(cmd) {
 			encoding: "utf8",
 			maxBuffer: 20 * 1024 * 1024,
 		});
-        core.info(`Stdout: ${stdout}`);
         return {
             status: 0,
             stdout: stdout.trim(),
             stderr: "",
         };
 	} catch (error) {
-        core.info(error);
         return {
             status: error.status,
-            stdout: `Stdout: ${error.stdout}`.trim(),
-            stderr: `Stderr ${error.stderr}`.trim(),
+            stdout: `${error.stdout}`.trim(),
+            stderr: `${error.stderr}`.trim(),
         };
 	}
 }
