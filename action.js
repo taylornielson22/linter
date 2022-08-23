@@ -14,7 +14,6 @@ const core = require("@actions/core");
  * @returns {OutputResult} - Output of the shell command
  */
 function run(cmd) {
-	core.info(cmd);
 	try {
 		const stdout = execSync(cmd, {
 			encoding: "utf8",

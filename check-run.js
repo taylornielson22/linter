@@ -47,7 +47,7 @@ async function updateCheck(linterName, lintResult, summary) {
 	});
 }
 
-async function createInProgressCheck(linterName,) {
+async function createInProgressCheck(linterName) {
 	const body = {
 		owner: owner_input,
 		repo: repo_input,
