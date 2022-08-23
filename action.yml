@@ -1,11 +1,14 @@
 name: Lint Action
 description: 'GitHub action for detecting linting errors'
 inputs:
-  token:
+  github_token:
     description: GitHub Token
-    required: true
+    required: false
   repo_name:
     description: Repository Name
+    required: true
+  owner:
+    description: Owner Name
     required: true
   sha:
     description: Base sha of PR

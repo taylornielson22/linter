@@ -1,5 +1,6 @@
 
 const core = require("@actions/core");
+const { Octokit } = require("@octokit/core");
 const https = require("https");
 const { name: actionName } = require("./package.json");
 
@@ -27,59 +28,28 @@ async function createCheck(linterName, sha, lintResult, summary) {
 			})),
 		];
 	}
-
-
-	let conclusion = lintResult.isSuccess ? "success" : "failure";
-	const body = {
-		name: linterName,
-		head_sha: sha,
-		conclusion,
-		output: {
-			title: summary,
-			summary: `${linterName} found ${summary}`,
-			annotations,
-		},
-	};
-	try {
-		const repo = core.getInput("repo_name");
-		await http_request(`${process.env.GITHUB_API_URL}/repos/${repo}/check-runs`, body);
-		core.info(`${linterName} check created successfully`);
-	} catch (err) {
-		throw new Error(`Error trying to create GitHub check run: ${errorMessage}`);
+	const owner_input = core.getInput("owner");
+	const repo_input = core.getInput("repo_name");
+	try{
+		const octokit = new Octokit({
+			auth: core.getInput("github_token")
+		})
+		await octokit.request(`POST /repos/${owner_input}/${repo_input}/check-runs`, {
+			owner: owner_input,
+			repo: repo_input,
+			name: linterName,
+			head_sha: sha,
+			conclusion: lintResult.isSuccess ? "success" : "failure",
+			output: {
+			  title: `${linterName} Completed Linting`,
+			  summary: `${linterName} found ${summary}`,
+			  annotations,
+			}
+		  });
+		  core.info(`${linterName} check created successfully`);
+	} catch (error) {
+		throw new Error(`Error trying to create GitHub check run: ${error}`);
     }
 }
 
-
-function http_request(url, body){
-	const token = core.getInput("token");
-	return new Promise((resolve) => {
-		const req = https
-			.request(url, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					Accept: "application/vnd.github.antiope-preview+json",
-					Authorization: `Bearer ${token}`,
-					"User-Agent": actionName,
-				},
-				body,
-			}, (res) => {
-				let data = "";
-				res.on("data", (chunk) => {
-					data += chunk;
-				});
-				res.on("end", () => {
-					if (res.statusCode >= 400) 
-						core.info(`Error trying to create GitHub check run ${res.statusCode}`);
-					else 
-						resolve({ res, data: JSON.parse(data) });
-				});
-			})
-		if (body) {
-			req.end(JSON.stringify(body));
-		} else {
-			req.end();
-		}
-	});
-}
 module.exports = { createCheck };
