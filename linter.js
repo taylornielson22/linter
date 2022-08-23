@@ -18,11 +18,6 @@ class Linter
         install();
     }
 
-    static install()
-    {
-        run(`pip install ${ this.name() }`)
-    }
-
     /**
     * @returns {string} - linter name
     */
@@ -31,6 +26,9 @@ class Linter
 		throw new Error("Abstract method has no implementation")
 	}
 
+    /**
+    * @returns {string} - linting cmd
+    */
     static cmd() 
     {
         throw new Error("Abstract method has no implementation")
@@ -42,6 +40,7 @@ class Linter
 	 */
     static lint()
     {
+        run(`pip install ${ this.name() }`)
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
         return this.parseLint(output);
     }
