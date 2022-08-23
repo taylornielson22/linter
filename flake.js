@@ -24,13 +24,13 @@ class Flake8 {
 	 */
 	static lint(COMMIT_COUNT=1) {
         run("ls")
-        const out = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
+        const out = run(``)
         core.info(`out stdout is ${out.stdout}`);
         const filesChanged = out.stdout.split(" ");
         core.info(`out stdout is ${filesChanged.toString()}`);
         const files = filesChanged.join(",");
         core.info(`files changed: ${files}`);
-		const output = run(`flake8 --filename ${files}`);
+		const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000 flake8`);
         const lintResult = initLintResult();
 		lintResult.isSuccess = output.status === 0;
 		const matches = output.stdout.matchAll(PARSE_REGEX);
