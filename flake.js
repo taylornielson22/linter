@@ -4,7 +4,6 @@ const core = require("@actions/core");
 
 const { run } = require("./action");
 const { initLintResult } = require("./lint-result");
-const { Cipher } = require("crypto");
 
 const PARSE_REGEX = /^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm;
 
@@ -24,6 +23,7 @@ class Flake8 {
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	static lint(COMMIT_COUNT=1) {
+        run("ls")
         const out = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
         core.info(`out stdout is ${out.stdout}`);
         const filesChanged = out.stdout.split(" ");
