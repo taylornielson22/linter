@@ -22,8 +22,10 @@ class Flake8 {
 	 */
     static changedFiles(){
         const output = run(`git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("sha") } | grep -E .pyi*$ | xargs --max-lines=50000`)
+        core.info(output.stdout);
         const filesChanged = output.stdout.split(" ");
-        return filesChanged.map((ext) => `"**${sep}*.${ext}"`).join(",");
+        core.info(filesChanged);
+        return filesChanged.join(",");
     }
 	/**
 	 * Runs the linting program and returns the command output
