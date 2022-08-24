@@ -4,17 +4,18 @@ const { run } = require("./action");
 const { initLintResult } = require("./lint-result");
 
 const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("base_sha") } | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty`;
-const PARSE_REGEX = /^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm;
+
 
 /** @typedef {import('./lint-result').LintResult} LintResult */
 
 class Linter 
 {
-    constructor()
+    constructor(name)
     {
         if(this.constructor == Linter){
             throw new Error("Object of Abstract Class cannot be created")
         }
+        this.name = name;
     }
     
     /**
@@ -22,7 +23,7 @@ class Linter
     */
     name() 
     {
-		throw new Error("Abstract method has no implementation")
+		return this.name;
 	}
 
     /**
@@ -41,69 +42,79 @@ class Linter
     {
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
         core.info(`STATUS: ${ output.status } \nSTDOUT: ${ output.stdout } \nSTDERR: ${ output.stderr }`);
+        const lintResult = initLintResult();
+		lintResult.isSuccess = lintOutput.status === 0;
+        lintResult.errors = this.parseLint(output);
         return this.parseLint(output);
     }
 
     /**
-	 * Parse output from linting
-     * @param {OutputResult} lintOutput
-    * @returns {LintResult} - parsed output of linting result
+    * Parses linting errors 
+    * @param {string} lintOutput
+    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
     */
+     parseLint(lintOutput)
+     {
+        throw new Error("Abstract method has no implementation")
+     }
+}
+	
+class Flake8 extends Linter
+{
+    constructor (name) {
+        super(name);
+    }
+
+    cmd() 
+    {
+        return "flake8"
+    }
+
     parseLint(lintOutput)
     {
-        const lintResult = initLintResult();
-		lintResult.isSuccess = lintOutput.status === 0;
-		const matches = lintOutput.stdout.matchAll(PARSE_REGEX);
+        const errors = [];
+		const matches = lintOutput.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
         for (const match of matches) {
 			const [_, pathFull, line, rule, text] = match;
-			const leadingSep = `.${sep}`; // sep = ./ or .\
-			let path = pathFull;
-			if (path.startsWith(leadingSep)) {
-				path = path.substring(2); // Remove ./ from path
-			}
+			let path = pathFull.startsWith(`.${sep}`) ? pathFull.substring(2) : pathFull // Remove ./ or .\ from path
 			const lineNumber = parseInt(line, 10);
-            
-			lintResult.error.push({
+			errors.push({
 				path,
 				firstLine: lineNumber,
 				lastLine: lineNumber,
 				message: `${text} (${rule})`,
 			});
         }
-            return lintResult;
-    }
-}
-	
-class Flake8 extends Linter
-{
-    constructor () {
-        super();
-     }
-
-    name() 
-    {
-		return "flake8"
-	}
-
-    cmd() 
-    {
-        return "flake8"
+        return errors;
     }
 }
 class Black extends Linter
 {
-    constructor () {
-        super();
-     } 
-
-    name() 
-    {
-		return "black"
-	}
+    constructor (name) {
+        super(name);
+    } 
 
     cmd() 
     {
         return "black --target-version py38 --check"
+    }
+
+    parseLint(lintOutput)
+    {
+        const errors = [];
+		const matches = lintOutput.matchAll(/^(.*) (.*\.py$)/gm);
+        for (const match of matches) 
+        {
+			const [text, pathFull] = match;
+			let path = pathFull.startsWith(`.${sep}`) ? pathFull.substring(2) : pathFull // Remove ./ or .\ from path
+			errors.push({
+				path,
+				firstLine: 1,
+				lastLine: 1,
+				message: `${text}`,
+			});
+        }
+        return errors;
     }
 }   
     
