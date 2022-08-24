@@ -8,21 +8,6 @@ const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("b
 
 /** @typedef {import('./lint-result').LintResult} LintResult */
 
-/**
-    * Returns correct Linter
-    * @param {string} name
-    * @returns {Linter} 
-    */
-function getLinter(name){
-    if(name == "flake8"){
-        return new Flake8();
-    }
-    if(name == "black"){
-        return new Black();
-    }
-    throw new Error("Invalid Linter name");
-}
-
 class Linter 
 {
     constructor()

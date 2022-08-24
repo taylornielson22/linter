@@ -34,7 +34,7 @@ async function executeAction(linter) {
 
 async function execute_async(linter_name)
 {
-    var linter = getLinter(linter_name);
+    let linter = linter_name == "flake8" ? new Flake8() : new Black();
     await executeAction(linter).then(() =>{
         core.info(`Linting complete with ${linter.name()}`);
     });
