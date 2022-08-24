@@ -76,9 +76,10 @@ class Flake8 extends Linter
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	parseOutput(output) {
+        core.info("Parsing stdout")
         const lintResult = initLintResult();
-		lintResult.isSuccess = lintOutput.status === 0;
-		const matches = lintOutput.stdout.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
+		lintResult.isSuccess = output.status === 0;
+		const matches = output.stdout.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
         for (const match of matches) 
         {
 			const [_, pathFull, line, rule, text] = match;
@@ -114,8 +115,9 @@ class Black extends Linter
 	 * @returns {LintResult} - Parsed lint result
 	 */
 	parseOutput(output) { 
+        core.info("Parsing stderr")
         const lintResult = initLintResult();
-		lintResult.isSuccess = lintOutput.status === 0;
+		lintResult.isSuccess = output.status === 0;
 		const matches = output.stderr.matchAll(/^(.*) (.*\.py$)/gm);
         for (const match of matches) 
         {
