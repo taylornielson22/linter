@@ -15,6 +15,8 @@ class Linter
         if(this.constructor == Linter){
             throw new Error("Object of Abstract Class cannot be created")
         }
+        this.name = ""
+        this.cmd = ""
     }
     
     /**
