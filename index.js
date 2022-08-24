@@ -1,7 +1,7 @@
 const {Linter, Flake8, Black, getLinter} = require('./linter');
 const core = require('@actions/core')
 const { createCheck } = require("./check-run");
-const linters = ["flake8", "black"];
+
 
 /**
  * Executes action w/ specfic linter
@@ -32,16 +32,15 @@ async function executeAction(linter) {
 }
 
 
-async function execute_async(linter_name)
-{
-    let linter = linter_name == "flake8" ? new Flake8() : new Black();
-    await executeAction(linter).then(() =>{
-        core.info(`Linting complete with ${linter.name()}`);
-    });
-}
-
-linters.forEach(linter_name => {
-    if(core.getBooleanInput(linter_name) == true){
-        execute_async(linter_name);
+    if(core.getBooleanInput("flake8") == true){
+        const linter = new Flake8()
+        await executeAction(linter).then(() =>{
+            core.info(`Linting complete with ${linter.name()}`);
+        });
     }
-});
+    if(core.getBooleanInput("black") == true){
+        const linter = new Black()
+        await executeAction(linter).then(() =>{
+            core.info(`Linting complete with ${linter.name()}`);
+        });
+    }

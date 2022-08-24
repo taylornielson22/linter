@@ -46,11 +46,6 @@ class Linter
         lintResult.errors = this.parseLint(output);
         return this.parseLint(output);
     }
-
-     parseLint(lintOutput)
-     {
-        throw new Error("Abstract method has no implementation")
-     }
 }
 	
 class Flake8 extends Linter
