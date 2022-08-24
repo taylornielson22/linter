@@ -15,8 +15,6 @@ class Linter
         if(this.constructor == Linter){
             throw new Error("Object of Abstract Class cannot be created")
         }
-        this.name = ""
-        this.cmd = ""
     }
     
     /**
@@ -24,7 +22,7 @@ class Linter
     */
     name() 
     {
-		return this.name;
+		throw new Error("Abstract method has no implementation")
 	}
 
     /**
@@ -32,7 +30,7 @@ class Linter
     */
     cmd() 
     {
-        return this.cmd;
+        throw new Error("Abstract method has no implementation")
     }
 
     /**
@@ -68,6 +66,16 @@ class Flake8 extends Linter
         this.cmd = "flake8"
     } 
 
+    name() 
+    {
+		return "flake8"
+	}
+
+    cmd() 
+    {
+		return "flake8"
+	}
+
     parseLint(lintOutput)
     {
         const errors = [];
@@ -90,9 +98,17 @@ class Black extends Linter
 {
     constructor () {
         super()
-        this.name = "black"
-        this.cmd = "black --target-version py38 --check"
     } 
+
+    name() 
+    {
+		return "black"
+	}
+
+    cmd() 
+    {
+		return "black --target-version py38 --check"
+	}
 
     parseLint(lintOutput)
     {
