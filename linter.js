@@ -116,6 +116,5 @@ module.exports = {
     Linter,
     Flake8,
     Black,
-    getLinter
 }
 
