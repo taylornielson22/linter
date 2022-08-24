@@ -76,6 +76,7 @@ class Linter
 class Flake8 extends Linter
 {
     constructor () {
+        super()
         this.name = "flake8"
         this.cmd = "flake8"
     } 
@@ -101,6 +102,7 @@ class Flake8 extends Linter
 class Black extends Linter
 {
     constructor () {
+        super()
         this.name = "black"
         this.cmd = "black --target-version py38 --check"
     } 
