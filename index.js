@@ -8,41 +8,29 @@ const { createCheck } = require("./check-run");
  *  @param {Linter} linter
  */
 async function executeAction(linter) {
-    const checks = [];
     const linterName = linter.name()
+    if(core.getBooleanInput(linterName == false))
+        return;
+    
     core.info(`Linting with ${linterName }`);
     try
     {
-        const lintOutput = linter.lint();
+        const lintOutput = await Promise(linter.lint());
         const lintResult = linter.parseOutput(lintOutput);
         const summary = `${linterName} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
         core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
-        checks.push({ linterName, lintResult, summary });
-	    await Promise.all(
-	        checks.map(({ linterName, lintResult, summary }) =>
-			    createCheck(linterName, lintResult, summary),
-	    	),
-	    );
+        createCheck(linterName, lintResult, summary)
     }
     catch(error)
     {
         core.info(`Linting FAILED with ${linterName}`);
         core.setFailed(error.message);
     }
-    
 }
-
-
-    if(core.getBooleanInput("flake8") == true){
-        const linter = new Flake8()
-        executeAction(linter).then(() =>{
-            core.info(`Linting complete with ${linter.name()}`);
-        });
-    }
-    if(core.getBooleanInput("black") == true){
-        const linter = new Black()
-        executeAction(linter).then(() =>{
-            core.info(`Linting complete with ${linter.name()}`);
-        });
-    }
-    
+async function start(){
+    const flake = new Flake8();
+    await executeAction(flake);
+    const black = new Black()
+    await executeAction(black);
+}
+start()
