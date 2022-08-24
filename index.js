@@ -9,7 +9,7 @@ const { createCheck } = require("./check-run");
  */
 async function executeAction(linter) {
     const linter_name = linter.linterName()
-    if(core.getBooleanInput(linter_name == false))
+    if(core.getBooleanInput(linter_name)  == false)
         return;
     
     core.info(`Linting with ${linter_name }`);
