@@ -8,22 +8,22 @@ const { createCheck } = require("./check-run");
  *  @param {Linter} linter
  */
 async function executeAction(linter) {
-    const linterName = linter.name()
-    if(core.getBooleanInput(linterName == false))
+    const linter_name = linter.linterName()
+    if(core.getBooleanInput(linter_name == false))
         return;
     
-    core.info(`Linting with ${linterName }`);
+    core.info(`Linting with ${linter_name }`);
     try
     {
         const lintOutput = await Promise(linter.lint());
         const lintResult = linter.parseOutput(lintOutput);
-        const summary = `${linterName} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
+        const summary = `${linter_name} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
         core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
-        createCheck(linterName, lintResult, summary)
+        createCheck(linter_name, lintResult, summary)
     }
     catch(error)
     {
-        core.info(`Linting FAILED with ${linterName}`);
+        core.info(`Linting FAILED with ${linter_name}`);
         core.setFailed(error.message);
     }
 }
