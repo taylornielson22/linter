@@ -8,14 +8,28 @@ const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("b
 
 /** @typedef {import('./lint-result').LintResult} LintResult */
 
+/**
+    * Returns correct Linter
+    * @param {string} name
+    * @returns {Linter} 
+    */
+function getLinter(name){
+    if(name == "flake8"){
+        return new Flake8();
+    }
+    if(name == "black"){
+        return new Black();
+    }
+    throw new Error("Invalid Linter name");
+}
+
 class Linter 
 {
-    constructor(name)
+    constructor()
     {
         if(this.constructor == Linter){
             throw new Error("Object of Abstract Class cannot be created")
         }
-        this.name = name;
     }
     
     /**
@@ -31,7 +45,7 @@ class Linter
     */
     cmd() 
     {
-        throw new Error("Abstract method has no implementation")
+        return this.cmd;
     }
 
     /**
@@ -61,14 +75,10 @@ class Linter
 	
 class Flake8 extends Linter
 {
-    constructor (name) {
-        super(name);
-    }
-
-    cmd() 
-    {
-        return "flake8"
-    }
+    constructor () {
+        this.name = "flake8"
+        this.cmd = "flake8"
+    } 
 
     parseLint(lintOutput)
     {
@@ -90,14 +100,10 @@ class Flake8 extends Linter
 }
 class Black extends Linter
 {
-    constructor (name) {
-        super(name);
+    constructor () {
+        this.name = "black"
+        this.cmd = "black --target-version py38 --check"
     } 
-
-    cmd() 
-    {
-        return "black --target-version py38 --check"
-    }
 
     parseLint(lintOutput)
     {
@@ -123,5 +129,6 @@ module.exports = {
     Linter,
     Flake8,
     Black,
+    getLinter
 }
 
