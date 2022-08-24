@@ -13,7 +13,7 @@ async function executeAction(linter) {
     core.info(`Linting with ${linterName }`);
     try
     {
-        const lintOutput = await linter.lint();
+        const lintOutput = linter.lint();
         const lintResult = linter.parseOutput(lintOutput);
         const summary = `${linterName} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
         core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
