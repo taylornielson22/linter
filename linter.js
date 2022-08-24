@@ -21,7 +21,7 @@ class Linter
     /**
     * @returns {string} - linter name
     */
-    name() 
+    lintName() 
     {
         return this.linter
 		//throw new Error("Abstract method has no implementation")
