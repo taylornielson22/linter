@@ -44,7 +44,7 @@ class Linter
         const lintResult = initLintResult();
 		lintResult.isSuccess = lintOutput.status === 0;
         lintResult.errors = this.parseLint(output);
-        return this.parseLint(output);
+        return lintResult;
     }
 }
 	
