@@ -15,6 +15,7 @@ class Linter
         if(this.constructor == Linter){
             throw new Error("Object of Abstract Class cannot be created")
         }
+        this.linter = ""
     }
     
     /**
@@ -22,7 +23,8 @@ class Linter
     */
     name() 
     {
-		throw new Error("Abstract method has no implementation")
+        return this.linter
+		//throw new Error("Abstract method has no implementation")
 	}
 
     /**
@@ -57,14 +59,13 @@ class Flake8 extends Linter
 {
     constructor () {
         super()
-        this.name = "flake8"
-        this.cmd = "flake8"
+        this.linter = "flake8"
     } 
 
-    name() 
-    {
-		return "flake8"
-	}
+    // name() 
+    // {
+	// 	return "flake8"
+	// }
 
     cmd() 
     {
@@ -101,10 +102,10 @@ class Black extends Linter
         super()
     } 
 
-    name() 
-    {
-		return "black"
-	}
+    // name() 
+    // {
+	// 	return "black"
+	// }
 
     cmd() 
     {

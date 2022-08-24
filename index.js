@@ -1,4 +1,4 @@
-const {Linter, Flake8, Black, getLinter} = require('./linter');
+const {Linter, Flake8, Black} = require('./linter');
 const core = require('@actions/core')
 const { createCheck } = require("./check-run");
 
