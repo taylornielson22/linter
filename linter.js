@@ -49,7 +49,7 @@ class Linter
 
     /**
     * Parses linting errors 
-    * @param {string} lintOutput
+    * @param {import("./action").OutputResult} lintOutput
     * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
     */
      parseLint(lintOutput)
@@ -79,7 +79,7 @@ class Flake8 extends Linter
     parseLint(lintOutput)
     {
         const errors = [];
-		const matches = lintOutput.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
+		const matches = lintOutput.stdout.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
         for (const match of matches) {
 			const [_, pathFull, line, rule, text] = match;
 			let path = pathFull.startsWith(`.${sep}`) ? pathFull.substring(2) : pathFull // Remove ./ or .\ from path
@@ -113,7 +113,7 @@ class Black extends Linter
     parseLint(lintOutput)
     {
         const errors = [];
-		const matches = lintOutput.matchAll(/^(.*) (.*\.py$)/gm);
+		const matches = lintOutput.stderr.matchAll(/^(.*) (.*\.py$)/gm);
         for (const match of matches) 
         {
 			const [text, pathFull] = match;
