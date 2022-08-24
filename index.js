@@ -15,7 +15,7 @@ async function executeAction(linter) {
     core.info(`Linting with ${linter_name }`);
     try
     {
-        const lintOutput = await Promise(linter.lint());
+        const lintOutput = linter.lint();
         const lintResult = linter.parseOutput(lintOutput);
         const summary = `${linter_name} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
         core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
