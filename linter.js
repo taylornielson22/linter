@@ -47,11 +47,6 @@ class Linter
         return this.parseLint(output);
     }
 
-    /**
-    * Parses linting errors 
-    * @param {import("./action").OutputResult} lintOutput
-    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
-    */
      parseLint(lintOutput)
      {
         throw new Error("Abstract method has no implementation")
@@ -76,6 +71,11 @@ class Flake8 extends Linter
 		return "flake8"
 	}
 
+    /**
+    * Parses linting errors 
+    * @param {import("./action").OutputResult} lintOutput
+    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
+    */
     parseLint(lintOutput)
     {
         const errors = [];
@@ -110,6 +110,11 @@ class Black extends Linter
 		return "black --target-version py38 --check"
 	}
 
+    /**
+    * Parses linting errors 
+    * @param {import("./action").OutputResult} lintOutput
+    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
+    */
     parseLint(lintOutput)
     {
         const errors = [];
