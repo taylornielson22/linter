@@ -11,7 +11,7 @@ const core = require("@actions/core");
 /**
  * Executes the provided shell command
  * @param {string} cmd - Shell command to execute
- * @returns {OutputResult} - Output of the shell command
+ * @returns {{status: number, stdout: string, stderr: string}} - Output of the shell command
  */
 function run(cmd) {
 	try {

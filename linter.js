@@ -35,16 +35,21 @@ class Linter
 
     /**
 	 * Runs the linting program and returns the command output
-	 * @returns {LintResult} - Parsed lint result
+	 * @returns {{status: number, stdout: string, stderr: string}} - Parsed lint result
 	 */
     lint()
     {
 		const output = run(`${ GIT_DIFF } ${this.cmd()}`);
         core.info(`STATUS: ${ output.status } \nSTDOUT: ${ output.stdout } \nSTDERR: ${ output.stderr }`);
-        const lintResult = initLintResult();
-		lintResult.isSuccess = lintOutput.status === 0;
-        lintResult.errors = this.parseLint(output);
-        return lintResult;
+        return output;
+    }
+
+    /**
+	 * @param {{status: number, stdout: string, stderr: string}} output - Output of the lint command
+	 * @returns {LintResult} - Parsed lint result
+	 */
+	parseOutput(output) { 
+        throw new Error("Abstract method has no implementation")
     }
 }
 	
@@ -67,27 +72,27 @@ class Flake8 extends Linter
 	}
 
     /**
-    * Parses linting errors 
-    * @param {import("./action").OutputResult} lintOutput
-    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
-    */
-    parseLint(lintOutput)
-    {
-        const errors = [];
+	 * @param {{status: number, stdout: string, stderr: string}} output - Output of the lint command
+	 * @returns {LintResult} - Parsed lint result
+	 */
+	parseOutput(output) {
+        const lintResult = initLintResult();
+		lintResult.isSuccess = lintOutput.status === 0;
 		const matches = lintOutput.stdout.matchAll(/^(.*):([0-9]+):[0-9]+: (\w*) (.*)$/gm);
-        for (const match of matches) {
+        for (const match of matches) 
+        {
 			const [_, pathFull, line, rule, text] = match;
 			let path = pathFull.startsWith(`.${sep}`) ? pathFull.substring(2) : pathFull // Remove ./ or .\ from path
-			const lineNumber = parseInt(line, 10);
-			errors.push({
+            const lineNumber = parseInt(line, 10);
+			lintResult.error.push({
 				path,
 				firstLine: lineNumber,
 				lastLine: lineNumber,
 				message: `${text} (${rule})`,
 			});
         }
-        return errors;
-    }
+        return lintResult;
+	}
 }
 class Black extends Linter
 {
@@ -104,29 +109,27 @@ class Black extends Linter
     {
 		return "black --target-version py38 --check"
 	}
-
-    /**
-    * Parses linting errors 
-    * @param {import("./action").OutputResult} lintOutput
-    * @returns {{path: string, firstLine: number, lastLine: number, message: string}[]} 
-    */
-    parseLint(lintOutput)
-    {
-        const errors = [];
-		const matches = lintOutput.stderr.matchAll(/^(.*) (.*\.py$)/gm);
+   /**
+	 * @param {{status: number, stdout: string, stderr: string}} output - Output of the lint command
+	 * @returns {LintResult} - Parsed lint result
+	 */
+	parseOutput(output) { 
+        const lintResult = initLintResult();
+		lintResult.isSuccess = lintOutput.status === 0;
+		const matches = output.stderr.matchAll(/^(.*) (.*\.py$)/gm);
         for (const match of matches) 
         {
 			const [text, pathFull] = match;
 			let path = pathFull.startsWith(`.${sep}`) ? pathFull.substring(2) : pathFull // Remove ./ or .\ from path
-			errors.push({
+			lintResult.error.push({
 				path,
 				firstLine: 1,
 				lastLine: 1,
 				message: `${text}`,
 			});
         }
-        return errors;
-    }
+        return lintResult;
+	}
 }   
     
 
