@@ -1,7 +1,7 @@
 const {Linter, Flake8, Black} = require('./linter');
 const core = require('@actions/core')
 const { createCheck } = require("./check-run");
-
+const failure = false;
 
 /**
  * Executes action w/ specfic linter
@@ -20,6 +20,8 @@ async function executeAction(linter) {
         const summary = `${linter_name} found ${lintResult.error.length} error(s) and ${lintResult.warning.length} warning(s)`;
         core.info(`${summary} (${lintResult.isSuccess ? "success" : "failure"})`);
         createCheck(linter_name, lintResult, summary)
+        if (lintResult.error.length > 0)
+		    failure = true;
     }
     catch(error)
     {
@@ -32,5 +34,7 @@ async function start(){
     await executeAction(flake);
     const black = new Black()
     await executeAction(black);
+    if (failure)
+        core.setFailed("Linting failures detected. See check runs with annotations for details.");
 }
 start()
