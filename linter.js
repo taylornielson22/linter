@@ -3,7 +3,8 @@ const core = require("@actions/core");
 const { run } = require("./action");
 const { initLintResult } = require("./lint-result");
 
-const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX ${ core.getInput("base_sha") } | grep -E .pyi*$ | xargs --max-lines=50000 --no-run-if-empty`;
+const GIT_DIFF = `git diff --name-only --diff-filter=ACMRTUX HEAD~${ core.getInput("base_sha") } | grep -E .pyi*$  |
+    xargs --max-lines=50000 --no-run-if-empty`;
 
 
 /** @typedef {import('./lint-result').LintResult} LintResult */
