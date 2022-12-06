@@ -30,6 +30,9 @@ async function executeAction(linter) {
     }
 }
 async function start(){
+    const payload = JSON.stringify(github.context.payload, undefined, 2)
+    console.log(`The event payload: ${payload}`)
+    console.log(`The event payload: ${github.event_name}`)
     const flake = new Flake8();
     await executeAction(flake);
     const black = new Black()
